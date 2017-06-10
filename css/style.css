@@ -27,6 +27,7 @@ body {
 
 .body {
     max-width: 500px;
+
     margin: auto;
     padding: 10px;
 }
@@ -48,4 +49,13 @@ body {
 }
 .contactLinks a:hover {
     color: #4fc08d;
+}
+
+pre {
+    max-width: 500px;
+    overflow-x: scroll;
+    background: #333;
+    color: #66afa4;
+    padding: 15px;
+    border-radius: 3px;
 }

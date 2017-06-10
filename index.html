@@ -66,7 +66,6 @@
     </div>
     <section class="header">
         <div class="small-img"></div>
-        <!-- <img class="small-img"></img> -->
     </section>
 
     <section class="body">
@@ -76,6 +75,88 @@
             I'm a Software Engineer in Venice, CA where I get to work with great people. I build full-stack web applications and websites with a variety of current technologies and tools. A puzzle solver with a keen eye for design - I'll tackle any backend or frontend
             project.
         </p>
+
+        <h1 class="title">Projects</h1>
+        <h3>run_server.sh</h3>
+        <p>I recently made a bash script to automate my server re-deploys. I use a node server for a few websites and I was getting tired of ssh-ing into my ec2 instances and running the same commands over and over whenever I made a change. So I just made this little script and run it by calling <b>./run_server.sh</b>. Deploying changes to my websites is now a breeze.</p>
+        <pre>
+#!/bin/bash
+git add .
+git commit -m'pulling down new code'
+git pull origin master
+echo '1. pulled most recent code from git.\n2. restarting server...'
+node_serverPID=($(ps -ef | grep 'node server.js'))
+kill ${node_serverPID[1]}
+echo 'killed node server process at:'
+echo ${node_serverPID[1]}
+PORT=80 nohup node server.js > stdout.txt 2 > stderr.txt &
+echo 'server now running indefinitely on port 80'
+        </pre>
+
+        <h3>Node Express Cluster Server Setup</h3>
+        <p>For simple web apps, I like to load balance the workers on my servers by using Node clusters. The same effect can be used with an NGINX setup, but I figure this is easier - and why not my server logic all in one place?</p>
+        <p>Here is my usual node express server setup:</p>
+        <pre>
+'use-strict';
+var cluster = require('cluster');
+if(cluster.isMaster) {
+    // initialize clusters on startup
+    var numWorkers = require('os').cpus().length;
+
+    console.log('Master cluster setting up ' + numWorkers + ' workers...');
+
+    for(var i = 0; i < numWorkers; i++) {
+        cluster.fork();
+    }
+
+    cluster.on('online', function(worker) {
+        console.log('Worker ' + worker.process.pid + ' is online');
+    });
+
+    cluster.on('exit', function(worker, code, signal) {
+        console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+        console.log('Starting a new worker');
+        cluster.fork();
+    });
+} else {
+    // dependencies
+
+    // express
+    var express = require('express');
+    // middleware
+    var http = require('http');
+    var morgan = require('morgan');
+    var bodyParser = require('body-parser');
+    // helpers
+    var helpers = require('./server_helpers.js');
+
+    // instantiate express app
+    var app = express();
+
+    // use middleware
+    app.use(morgan('dev'));
+    app.use(express.static(__dirname));
+    app.use(bodyParser.urlencoded({extended: true}));
+    app.use(bodyParser.json());
+
+    // Routes
+
+    // NOTE: this is where all my routes go
+    // EXAMPLE:
+    // app.route('/home')
+       .get(function(request, response){
+            helpers.getData('data/data.json', response);
+        })
+       .post(function(request, response){
+            helpers.writeData('data/data.json', request.body, request, response);
+        });
+
+    // create/run server
+    var PORT = process.env.PORT || 3000;
+    var server = http.createServer(app).listen(PORT);
+    console.log('listening on port '+PORT);
+}
+        </pre>
 
     </section>
 
