@@ -127,8 +127,6 @@ if(cluster.isMaster) {
     var http = require('http');
     var morgan = require('morgan');
     var bodyParser = require('body-parser');
-    // helpers
-    var helpers = require('./server_helpers.js');
 
     // instantiate express app
     var app = express();
@@ -143,12 +141,12 @@ if(cluster.isMaster) {
 
     // NOTE: this is where all my routes go
     // EXAMPLE:
-    // app.route('/home')
+    // app.route('/content')
        .get(function(request, response){
-            helpers.getData('data/data.json', response);
+            // do stuff
         })
        .post(function(request, response){
-            helpers.writeData('data/data.json', request.body, request, response);
+            // do stuff
         });
 
     // create/run server
