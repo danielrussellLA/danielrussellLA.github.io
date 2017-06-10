@@ -1,0 +1,51 @@
+body {
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.header {
+    max-width: 300px;
+    max-height: 300px;
+    width: 100%;
+    height: 300px;
+    margin: auto;
+    text-align: center;
+    border-radius: 50%;
+    margin-top: 50px;
+}
+
+@keyframes pulseColor {
+    0% {
+        background-color: #dadce1;
+    }
+    50% {
+        background-color: #fff;
+    }
+    100% {
+        background-color: #dadce1;
+    }
+}
+
+.body {
+    max-width: 500px;
+    margin: auto;
+    padding: 10px;
+}
+.name, .title {
+    color: #444;
+    text-align: center;
+}
+.name {
+    font-size: 2em;
+}
+.contactLinks {
+    text-align: left;
+}
+.contactLinks a {
+    color: #444;
+    font-size: 1.25em;
+    margin: 0 3px;
+    text-decoration: none;
+}
+.contactLinks a:hover {
+    color: #4fc08d;
+}
