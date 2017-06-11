@@ -1,5 +1,9 @@
 body {
     font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    max-width: 600px;
+    margin: auto;
+    padding: 10px;
+
 }
 
 .header {
@@ -26,10 +30,8 @@ body {
 }
 
 .body {
-    max-width: 600px;
-
-    margin: auto;
-    padding: 10px;
+    /*max-width: 600px;*/
+    /*margin: auto;*/
 }
 .name, .title {
     color: #444;
@@ -37,9 +39,11 @@ body {
 }
 .name {
     font-size: 2em;
+    line-height: 1px;
 }
+
 .contactLinks {
-    text-align: left;
+    text-align: right;
 }
 .contactLinks a {
     color: #444;
@@ -49,6 +53,10 @@ body {
 }
 .contactLinks a:hover {
     color: #4fc08d;
+}
+
+article {
+    margin-bottom: 50px;
 }
 
 pre {

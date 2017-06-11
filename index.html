@@ -69,34 +69,47 @@
     </section>
 
     <section class="body">
-        <h1 class="name">Daniel Russell</h1>
-        <h3 class="title">Software Engineer</h3>
-        <p class="description">
-            I'm a Software Engineer in Venice, CA where I get to work with great people. I build full-stack web applications and websites with a variety of current technologies and tools. A puzzle solver with a keen eye for design - I'll tackle any backend or frontend
-            project.
-        </p>
-
-        <h1 class="title">Projects</h1>
-        <h3>run_server.sh</h3>
-        <p>I recently made a bash script to automate my server re-deploys. I use a node server for a few websites and I was getting tired of ssh-ing into my ec2 instances and running the same commands over and over whenever I made a change. So I just made this little script and run it by calling <b>./run_server.sh</b>. Deploying changes to my websites is now a breeze.</p>
-        <pre>
+        <article>
+            <h1 class="name">Daniel Russell</h1>
+            <h3 class="title">Software Engineer</h3>
+            <p class="description">
+                I'm a Software Engineer in Venice, CA where I get to work with great people. I build full-stack web applications and websites with a variety of current technologies and tools. A puzzle solver with a keen eye for design - I'll tackle any backend or frontend
+                project.
+            </p>
+        </article>
+        <article>
+            <h1 class="name">Projects</h1>
+            <h3>run_server.sh</h3>
+            <p>I recently made a bash script to automate my server re-deploys. I use a node server for a few websites and I was getting tired of ssh-ing into my ec2 instances and running the same commands over and over whenever I made a change. So I just made this little script which I run by calling <b>./run_server.sh</b> while ssh'd into the server. Deploying changes to my websites is now a breeze.</p>
+            <pre>
 #!/bin/bash
+
+# pulls most recent code from github (master)
+
 git add .
 git commit -m'pulling down new code'
 git pull origin master
+
+# finds the process ID for the running node server and kills it:
+
 echo '1. pulled most recent code from git.\n2. restarting server...'
 node_serverPID=($(ps -ef | grep 'node server.js'))
 kill ${node_serverPID[1]}
 echo 'killed node server process at:'
 echo ${node_serverPID[1]}
+
+# uses nohup to infinitely run the server in the background
+# and logs the output logs to stdout.txt and stderr.txt
+
 PORT=80 nohup node server.js > stdout.txt 2 > stderr.txt &
 echo 'server now running indefinitely on port 80'
-        </pre>
-
-        <h3>Node Express Cluster Server Setup</h3>
-        <p>For simple web apps, I like to load balance the workers on my servers by using Node clusters. The same effect can be used with an NGINX setup, but I figure this is easier - and why not my server logic all in one place?</p>
-        <p>Here is my usual node express server setup:</p>
-        <pre>
+            </pre>
+        </article>
+        <article>
+            <h3>Node Express Cluster Server Setup</h3>
+            <p>For simple web apps, I like to load balance the workers on my servers by using Node clusters. The same effect can be used with an NGINX setup, but I figure this is easier - and why not my server logic all in one place?</p>
+            <p>Here is my usual node express server setup:</p>
+            <pre>
 'use-strict';
 var cluster = require('cluster');
 if(cluster.isMaster) {
@@ -154,8 +167,8 @@ if(cluster.isMaster) {
     var server = http.createServer(app).listen(PORT);
     console.log('listening on port '+PORT);
 }
-        </pre>
-
+            </pre>
+    </article>
     </section>
 
     <section class="footer">
