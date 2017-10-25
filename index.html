@@ -11,77 +11,119 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel='stylesheet'>
     <link href="./css/style.css" rel="stylesheet">
     <style>
-        .small-img {
-            background-image: url(https://s3-us-west-2.amazonaws.com/danielcontent/supersmall.png) !important;
-            -webkit-filter: blur(5px);
-            filter: blur(5px);
-
-            background-repeat: no-repeat !important;
-            background-size: cover !important;
-            transition: background-image .3s ease;
-            animation: pulseColor 2s infinite ease-in-out forwards;
-
-            max-width: 300px;
-            max-height: 300px;
-            width: 100%;
-            height: 300px;
-            margin: auto;
-            text-align: center;
-            border-radius: 50%;
-        }
-
-        .big-img {
-            -webkit-filter: blur(0px);
-            filter: blur(0px);
-            background-size: cover !important;
-            background-image: url(https://s3-us-west-2.amazonaws.com/danielcontent/large.png) !important;
-            transition: background-image .3s ease;
-
-            max-width: 300px;
-            max-height: 300px;
-            width: 100%;
-            height: 300px;
-            margin: auto;
-            text-align: center;
-            border-radius: 50%;
-        }
-
     </style>
 </head>
 
 <body>
-    <div class="contactLinks">
-        <a href="https://github.com/danielrussellLA" target="_blank">
-            <i class="fa fa-github" aria-hidden="true"></i>
-        </a>
-        <a href="https://www.linkedin.com/in/danielrussellla" target="_blank">
-            <i class="fa fa-linkedin" aria-hidden="true"></i>
-        </a>
-        <a href="mailto:contactdanielrussell@gmail.com" target="_blank" type="email">
-            <i class="fa fa-envelope" aria-hidden="true"></i>
-        </a>
-        <!-- <a href="https://twitter.com/danielrussellLA" target="_blank">
-            <i class="fa fa-twitter" aria-hidden="true"></i>
-        </a> -->
-    </div>
     <section class="header">
-        <div class="small-img"></div>
+        <img class="hero"src='./assets/danielrussell.jpg' />
+        <div class="contactLinks">
+            <a href="https://github.com/danielrussellLA" target="_blank">
+                <i class="fa fa-github" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/danielrussellla" target="_blank">
+                <i class="fa fa-linkedin" aria-hidden="true"></i>
+            </a>
+            <a href="mailto:contactdanielrussell@gmail.com" target="_blank" type="email">
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+            </a>
+        </div>
+        <div class='name-title'>
+            <div class="name">Daniel Russell</div>
+            <div class="title">Software Engineer</div>
+        </div>
     </section>
 
-    <section class="body">
-        <article>
-            <h1 class="name">Daniel Russell</h1>
-            <h3 class="title">Software Engineer</h3>
-            <p class="description">
-                I'm a Software Engineer in Venice, CA where I get to work with great people. I build full-stack web applications and websites with a variety of current technologies and tools. A puzzle solver with a keen eye for design - I'll tackle any backend or frontend
-                project.
-            </p>
-        </article>
-            <h1 class="name">Projects</h1>
-        <article>
-            <h2>run_server.sh</h2>
-            <p>I recently made a bash script to automate my server re-deploys. I use a node server for a few websites and I was getting tired of ssh-ing into my ec2 instances and running the same commands over and over whenever I made a change. So I just made this little script which I run by calling <b>./run_server.sh</b> while ssh'd into the server. Deploying changes to my websites is now a breeze.</p>
-            <pre>
+    <section class="wrapper">
+        <div class='content'>
+            <article>
+                <h1>A Little About Me...</h1>
+                <p class="description">
+                    I'm a Software Engineer in Venice, CA where I get to work with great people. Right now, I'm dabbling in deep learning/machine learning and blockchain technologies like bitcoin, ethereum, and hyperledger fabric. In my day job I build and maintain numerous AWS hosted web applications/websites including <a href="https://www.howstuffworks.com/" target="_blank">howstuffworks.com</a> and <a href="https://zoo.com" target="_blank">zoo.com</a> using javascript and python.
+                </p>
+            </article>
+            
+            <h1>Projects</h1>
+            
+            <article>
+                <h1>Slack Reminder App</h1>
+                <img class="project-preview" src="./assets/slackPullRequestReminder.jpg"
+                <p>I made a nifty internal tool that reminds teammates ever hour to check out github pull requests. I used the Slack and Github APIs along with the node-notify package to get real-time status updates on a PR (comments, approvals etc) and send push notifications to you so you know when it's safe to merge your code.</p>
+                <p>
+                    Check the project out github: <a href="https://github.com/danielrussellLA/slackPullRequestReminder" target="_blank">Slack Pull Request Reminder</a>
+                </p>
+            </article>
+            
+            
+            <article>
+                <h1>Node Express Cluster Server Setup</h1>
+                <p>For simple web apps, I like to load balance the workers on my servers by using Node's clusters. Doing so speeds up load times when multiple users are accessing the website at the same time.</p>
+                <p>Here is my usual node express server setup:</p>
+                <pre>
+'use-strict';
+var cluster = require('cluster');
+if(cluster.isMaster) {
+    // initialize clusters on startup
+    var numWorkers = require('os').cpus().length;
+    
+    console.log('Master cluster setting up ' + numWorkers + ' workers...');
+    
+    for(var i = 0; i < numWorkers; i++) {
+        cluster.fork();
+    }
+    
+    cluster.on('online', function(worker) {
+        console.log('Worker ' + worker.process.pid + ' is online');
+    });
+    
+    cluster.on('exit', function(worker, code, signal) {
+        console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+        console.log('Starting a new worker');
+        cluster.fork();
+    });
+} else {
+    // dependencies
+    
+    // express
+    var express = require('express');
+    // middleware
+    var http = require('http');
+    var morgan = require('morgan');
+    var bodyParser = require('body-parser');
+    
+    // instantiate express app
+    var app = express();
+    
+    // use middleware
+    app.use(morgan('dev'));
+    app.use(express.static(__dirname));
+    app.use(bodyParser.urlencoded({extended: true}));
+    app.use(bodyParser.json());
+    
+    // Routes
+    
+    // NOTE: this is where all my routes go
+    // EXAMPLE:
+    // app.route('/content')
+    .get(function(request, response){
+        // do stuff
+    })
+    .post(function(request, response){
+        // do stuff
+    });
+    
+    // create/run server
+    var PORT = process.env.PORT || 3000;
+    var server = http.createServer(app).listen(PORT);
+    console.log('listening on port '+PORT);
+}
+                </pre>
+            </article>
+            
+            <article>
+                <h1>Restart Node Server Bash Script</h1>
+                <p>I recently made a bash script to automate my server re-deploys. I use a node server for a few websites and I was getting tired of ssh-ing into my ec2 instances and running the same commands over and over whenever I made a change. So I just made this little script which I run by calling <b>./run_server.sh</b> while ssh'd into the server. Deploying changes to my websites is now a breeze.</p>
+                <pre>
 #!/bin/bash
 
 # pulls most recent code from github (master)
@@ -103,135 +145,28 @@ echo ${node_serverPID[1]}
 
 PORT=80 nohup node server.js > stdout.txt 2 > stderr.txt &
 echo 'server now running indefinitely on port 80'
-            </pre>
-        </article>
-        <article>
-            <h2>Node Express Cluster Server Setup</h2>
-            <p>For simple web apps, I like to load balance the workers on my servers by using Node's clusters. Doing so speeds up load times when multiple users are accessing the website at the same time.</p>
-            <p>Here is my usual node express server setup:</p>
-            <pre>
-'use-strict';
-var cluster = require('cluster');
-if(cluster.isMaster) {
-    // initialize clusters on startup
-    var numWorkers = require('os').cpus().length;
-
-    console.log('Master cluster setting up ' + numWorkers + ' workers...');
-
-    for(var i = 0; i < numWorkers; i++) {
-        cluster.fork();
-    }
-
-    cluster.on('online', function(worker) {
-        console.log('Worker ' + worker.process.pid + ' is online');
-    });
-
-    cluster.on('exit', function(worker, code, signal) {
-        console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
-        console.log('Starting a new worker');
-        cluster.fork();
-    });
-} else {
-    // dependencies
-
-    // express
-    var express = require('express');
-    // middleware
-    var http = require('http');
-    var morgan = require('morgan');
-    var bodyParser = require('body-parser');
-
-    // instantiate express app
-    var app = express();
-
-    // use middleware
-    app.use(morgan('dev'));
-    app.use(express.static(__dirname));
-    app.use(bodyParser.urlencoded({extended: true}));
-    app.use(bodyParser.json());
-
-    // Routes
-
-    // NOTE: this is where all my routes go
-    // EXAMPLE:
-    // app.route('/content')
-       .get(function(request, response){
-            // do stuff
-        })
-       .post(function(request, response){
-            // do stuff
-        });
-
-    // create/run server
-    var PORT = process.env.PORT || 3000;
-    var server = http.createServer(app).listen(PORT);
-    console.log('listening on port '+PORT);
-}
-            </pre>
-    </article>
-    </section>
+                </pre>
+            </article>
+            
+            
+        </section>
+        </div>
 
     <section class="footer">
-
+        <div class="footer-links">
+            <a href="https://github.com/danielrussellLA" target="_blank">
+                <i class="fa fa-github" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/danielrussellla" target="_blank">
+                <i class="fa fa-linkedin" aria-hidden="true"></i>
+            </a>
+            <a href="mailto:contactdanielrussell@gmail.com" target="_blank" type="email">
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+            </a>
+        </div>
     </section>
 
     <script src="./js/app.js"></script>
-    <script>
-        // Blur Up Image for faster image loadtime.
-        window.onload = function loadStuff() {
-            var win, doc, img, header, enhancedClass;
-
-            // Quit early if older browser (e.g. IE 8).
-            if (!('addEventListener' in window)) {
-                return;
-            }
-
-            win = window;
-            doc = win.document;
-            img = new Image();
-            header = doc.querySelector('.small-img');
-            enhancedClass = 'big-img';
-
-            // Rather convoluted, but parses out the first mention of a background
-            // image url for the enhanced header, even if the style is not applied.
-            var bigSrc = (function() {
-                // Find all of the CssRule objects inside the inline stylesheet
-                var styles = doc.querySelector('style').sheet.cssRules;
-                // Fetch the background-image declaration...
-                var bgDecl = (function() {
-                    // ...via a self-executing function, where a loop is run
-                    var bgStyle, i, l = styles.length;
-                    for (i = 0; i < l; i++) {
-                        // ...checking if the rule is the one targeting the
-                        // enhanced header.
-                        if (styles[i].selectorText &&
-                            styles[i].selectorText == '.' + enhancedClass) {
-                            // If so, set bgDecl to the entire background-image
-                            // value of that rule
-                            bgStyle = styles[i].style.backgroundImage;
-                            // ...and break the loop.
-                            break;
-                        }
-                    }
-                    // ...and return that text.
-                    return bgStyle;
-                }());
-                // Finally, return a match for the URL inside the background-image using a fancy regex.
-                // variable is assigned at all.
-                return bgDecl && bgDecl.match(/(?:\(['|"]?)(.*?)(?:['|"]?\))/)[1];
-            }());
-
-            // Assign an onLoad handler to the dummy image *before* assigning the src
-            img.onload = function() {
-                header.className += ' ' + enhancedClass;
-            };
-            // Finally, trigger the whole preloading chain by giving the dummy
-            // image its source.
-            if (bigSrc) {
-                img.src = bigSrc;
-            }
-        };
-    </script>
 </body>
 
 </html>
