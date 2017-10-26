@@ -91,6 +91,10 @@ article {
     border-bottom: 1px solid darkgrey;
 }
 
+article h1 {
+    font-size: 1.5em;
+}
+
 pre {
     overflow-x: scroll;
     background: #333;
