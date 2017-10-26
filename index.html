@@ -52,7 +52,7 @@
             <h1>Some Side Projects Of Mine...</h1>
             
             <article>
-                <h1>Slack Reminder App</h1>
+                <h2>Slack Reminder App</h2>
                 <img class="project-preview" src="./assets/slackPullRequestReminder.jpg"
                 <p>I made a nifty internal tool that reminds teammates every hour to check out a specified github pull request. I used the Slack and Github APIs along with the node-notify package to get real-time status updates on a PR (comments, approvals etc.). The app sends push notifications when a reminder is sent and when the PR is safe to merge. It has really come in handy on busy days.</p>
                 <p>
@@ -62,7 +62,7 @@
             
             
             <article>
-                <h1>Node Express Cluster Server Setup</h1>
+                <h2>Node Express Cluster Server Setup</h2>
                 <p>For simple web apps, I like to load balance the workers on my servers by using Node's clusters. Doing so speeds up load times when multiple users are accessing the website at the same time.</p>
                 <p>Here is my usual node express server setup:</p>
                 <pre>
@@ -127,7 +127,7 @@ if(cluster.isMaster) {
             </article>
             
             <article>
-                <h1>Restart Node Server Bash Script</h1>
+                <h2>Restart Node Server Bash Script</h2>
                 <p>I recently made a bash script to automate my server re-deploys. I use a node server for a few websites and I was getting tired of ssh-ing into my ec2 instances and running the same commands over and over whenever I made a change. So I just made this little script which I run by calling <b>./run_server.sh</b> while ssh'd into the server. Deploying changes to my websites is now a breeze.</p>
                 <pre>
 #!/bin/bash
