@@ -126,9 +126,11 @@ pre {
 }
 
 @media (max-width:700px) {
-    img {
-        /*max-width: 1200px;*/
-        
+    .hero {
+        padding-top: 98px;
+    }
+    .contactLinks {
+        display: none;
     }
     .name-title {
         position: absolute;
