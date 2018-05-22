@@ -22,7 +22,7 @@
 
 <body>
     <section class="header">
-        <img class="hero"src='./assets/danielrussell.jpg' />
+        <img class="hero"src='./assets/code.jpg' />
         <div class="contactLinks">
             <a href="https://github.com/danielrussellLA" target="_blank">
                 <i class="fa fa-github" aria-hidden="true"></i>
@@ -48,21 +48,222 @@
                     I'm a Software Engineer in Venice, CA where I get to work with great people. Right now, I'm dabbling in deep learning/machine learning and blockchain technologies like bitcoin, ethereum, and hyperledger fabric. In my day job I build and maintain numerous AWS hosted web applications/websites including <a href="https://www.howstuffworks.com/" target="_blank">howstuffworks.com</a> and <a href="https://zoo.com" target="_blank">zoo.com</a> using javascript and python.
                 </p>
             </article>
-            
-            <h1>Some Side Projects Of Mine...</h1>
-            
+
+            <h1>Some Projects Of Mine...</h1>
+
+            <article>
+                <h2>Data Driven Forms (Dynamic Forms) with Vuejs and json-schema</h2>
+                <small>March 2018</smalL>
+                <p>
+                    Forms - they're a necessary evil for any frotend job. You'll inevitably be asked to make a form with some unusual requirements. I've found that no matter how simple a form seems, it can be surprisingly labor intensive to implement new fields, esepcially when requests come in for conditional fields / form states.
+                </p>
+                <p>
+                    <b>JSON-schema to the rescue.</b> I recently came across <b>react-json-schema-form</b> which generates form templates with validation based on a custom json-schema. Seeing this <a href='https://mozilla-services.github.io/react-jsonschema-form/'>demo</a> inspired me to re-think how we create/maintain forms in my company's apps. Instead of manually going into the template code and writing a bunch of custom fields and conditionals, we could make the json-schema do most of the heavy lifting. Adding a new form would ideally be as simple as duplicating an existing json-schema defintion and editing it.
+                </p>
+                <p>
+                    We use Vuejs for our single page applications, so I did some digging to find something similar to react-json-schema and found <a href='https://github.com/formschema/native'>vue-json-schema</a> and <a href='https://github.com/vue-generators/vue-form-generator'>vue-form-generator</a>. Both seemed right for the job at first, but I soon found that they weren't customizable enough in the long run for our specific needs. So I decided to take the concept of data-driven dynamic forms and make my own implementation.
+                </p>
+                <h4>Tools I used for the job:</h4>
+                <ul>
+                    <li><b>Vuejs</b> - templating</li>
+                    <li><b>Vuex</b> - state management</li>
+                    <li><b>Vuelidate</b> - validation library</li>
+                    <li><b>json-schema</b> - dynamic form rules</li>
+                </ul>
+                <p>
+                    In the end, basically everything needed to render the form, including validation rules and field types were abstracted into the json schema, allowing the template code to be way simpler. The Vue template code loops over all the form fields within the schema, and template code within each field only had to define validtion code once.
+                </p>
+                <p>
+                    Below is an abridged version of what the code looked like:
+                </p>
+                <h4>Form.vue</h4>
+                <pre>
+<template>
+    <form
+       :class="[
+         'list-group',
+         'list-group-flush'
+       ]"
+       novalidate
+       @submit.prevent="submit">
+       <div
+         v-for="(section, index) in adFormSchema.sections[$route.name]"
+         :key="index"
+         class="list-group-item">
+         <h4 class="mb-3">{{ section.label }}</h4>
+         <div class="form-row">
+           <component
+             v-for="(field, index) in section.fields"
+             :is="componentType(field)"
+             :field="field"
+             :schema="adFormSchema"
+             :model="adForm"
+             :validator="$v.adForm"
+             :key="index"/>
+         </div>
+       </div>
+       <div class="card-footer">
+         <div class="float-right">
+           <button
+             class="btn btn-danger"
+             @click="cancel()">Cancel</button>
+           <button
+             v-if="$route.name == 'create'"
+             class="btn btn-info"
+             type="submit">Preview</button>
+           <button
+             v-if="$route.name == 'edit'"
+             class="btn btn-info"
+             type="submit">Save</button>
+         </div>
+       </div>
+     </form>
+</template>
+                </pre>
+                <h4>Input.vue</h4>
+                <pre>
+<template>
+  <div
+    v-if="handleConditionalField()"
+    class="col-md-6 mb-2">
+    <label :class="{ 'text-danger': validation.$error }">{{ schema.properties[field].label }} <span v-if="isRequired()">*</span></label>
+    <div class="input-group">
+      <div
+        v-if="unitType === 'currency'"
+        class="input-group-prepend">
+        <span class="input-group-text">$</span>
+      </div>
+      <input
+        v-model.number="model[field]"
+        :name="schema.properties[field].label"
+        :class="{
+          'form-control': true,
+          'is-invalid': validation.$error
+        }"
+        :required="isRequired()"
+        :type="schema.properties[field].type"
+        :min="schema.properties[field].min"
+        :max="schema.properties[field].max"
+        @blur="onBlur()">
+      <div
+        v-if="unitType === 'percent'"
+        class="input-group-append">
+        <span class="input-group-text">%</span>
+      </div>
+    </div>
+    <div
+      v-if="isRequired()"
+      class="validations">
+      <div
+        v-if="validation.$error">
+        <small class="text-danger">
+          please fill out this required field properly
+        </small>
+      </div>
+      <div
+        v-if="
+          model[field] &&
+            validation.$params.maxLen &&
+        model[field].length > validation.$params.maxLen.max"
+        :class="{
+          'text-danger': model[field] && model[field].length > validation.$params.maxLen.max
+      }">
+        <small>
+          max characters:  {{ validation.$params.maxLen.max }}
+        </small><br>
+        <small
+          v-if="model[field] && model[field].length > validation.$params.maxLen.max"
+          class="text-danger">
+          current characters: {{ model[field].length }}
+        </small>
+      </div>
+      <div v-if="validation.number !== undefined">
+        <small
+          v-if="validation.minVal !== undefined"
+          :class="{
+            'text-danger': !validation.minVal
+        }">
+          min: {{ validation.$params.minVal.min }}
+        </small>
+        <small
+          v-if="validation.maxVal !== undefined"
+          :class="{
+            'text-danger': !validation.maxVal
+        }">
+          max: {{ validation.$params.maxVal.max }}
+        </small>
+      </div>
+      <div
+        v-if="validation.number === false">
+        <small
+          v-if="validation.$error"
+          class="text-danger">
+          this field must be a number
+        </small>
+      </div>
+      <div
+        v-if="validation.url === false">
+        <small
+          v-if="validation.$error"
+          class="text-danger">
+          this field must be a valid url. ex: http://example.com
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
+                </pre>
+                <h4>schema.json</h4>
+                <pre>
+{
+    ...
+    "budget": {
+           "type": "number",
+           "format": "integer",
+           "label": "Budget",
+           "component": "input-field",
+           "min": 0,
+           "max": 1000,
+           "defaults": {
+               "openmail": 50,
+               "zoo": 50,
+               "howstuffworks": 50,
+               "autoversed": 50
+           },
+           "attrs": {
+               "unit": "currency"
+           }
+       },
+       "business_name": {
+           "type": "string",
+           "label": "Business Name",
+           "component": "input-field",
+           "max": 25,
+           "defaults": {
+               "zoo": "Zoo.com",
+               "howstuffworks": "Howstuffworks",
+               "autoversed": "Autoversed"
+           }
+       },
+       ...
+ }
+                </pre>
+            </article>
+
             <article>
                 <h2>Slack Reminder App</h2>
+                <small>October 2017</smalL>
                 <img class="project-preview" src="./assets/slackPullRequestReminder.jpg"
                 <p>I made a nifty internal tool that reminds teammates every hour to check out a specified github pull request. I used the Slack and Github APIs along with the node-notify package to get real-time status updates on a PR (comments, approvals etc.). The app sends push notifications when a reminder is sent and when the PR is safe to merge. It has really come in handy on busy days.</p>
                 <p>
                     Check the project out github: <a href="https://github.com/danielrussellLA/slackPullRequestReminder" target="_blank">Slack Pull Request Reminder</a>
                 </p>
             </article>
-            
-            
+
+
             <article>
                 <h2>Node Express Cluster Server Setup</h2>
+                <small>September 2017</small>
                 <p>For simple web apps, I like to load balance the workers on my servers by using Node's clusters. Doing so speeds up load times when multiple users are accessing the website at the same time.</p>
                 <p>Here is my usual node express server setup:</p>
                 <pre>
@@ -71,17 +272,17 @@ var cluster = require('cluster');
 if(cluster.isMaster) {
     // initialize clusters on startup
     var numWorkers = require('os').cpus().length;
-    
+
     console.log('Master cluster setting up ' + numWorkers + ' workers...');
-    
+
     for(var i = 0; i < numWorkers; i++) {
         cluster.fork();
     }
-    
+
     cluster.on('online', function(worker) {
         console.log('Worker ' + worker.process.pid + ' is online');
     });
-    
+
     cluster.on('exit', function(worker, code, signal) {
         console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
         console.log('Starting a new worker');
@@ -89,25 +290,25 @@ if(cluster.isMaster) {
     });
 } else {
     // dependencies
-    
+
     // express
     var express = require('express');
     // middleware
     var http = require('http');
     var morgan = require('morgan');
     var bodyParser = require('body-parser');
-    
+
     // instantiate express app
     var app = express();
-    
+
     // use middleware
     app.use(morgan('dev'));
     app.use(express.static(__dirname));
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
-    
+
     // Routes
-    
+
     // NOTE: this is where all my routes go
     // EXAMPLE:
     // app.route('/content')
@@ -117,7 +318,7 @@ if(cluster.isMaster) {
     .post(function(request, response){
         // do stuff
     });
-    
+
     // create/run server
     var PORT = process.env.PORT || 3000;
     var server = http.createServer(app).listen(PORT);
@@ -125,7 +326,7 @@ if(cluster.isMaster) {
 }
                 </pre>
             </article>
-            
+
             <article>
                 <h2>Restart Node Server Bash Script</h2>
                 <p>I recently made a bash script to automate my server re-deploys. I use a node server for a few websites and I was getting tired of ssh-ing into my ec2 instances and running the same commands over and over whenever I made a change. So I just made this little script which I run by calling <b>./run_server.sh</b> while ssh'd into the server. Deploying changes to my websites is now a breeze.</p>
@@ -153,8 +354,8 @@ PORT=80 nohup node server.js > stdout.txt 2 > stderr.txt &
 echo 'server now running indefinitely on port 80'
                 </pre>
             </article>
-            
-            
+
+
         </section>
         </div>
 
@@ -172,6 +373,22 @@ echo 'server now running indefinitely on port 80'
         </div>
     </section>
 
+    <script>
+    function encodePreElements() {
+        var pre = document.getElementsByTagName('pre');
+        for(var i = 0; i < pre.length; i++) {
+            var encoded = htmlEncode(pre[i].innerHTML);
+            pre[i].innerHTML = encoded;
+        }
+    };
+    function htmlEncode(value) {
+        var div = document.createElement('div');
+        var text = document.createTextNode(value);
+        div.appendChild(text);
+        return div.innerHTML;
+    }
+    encodePreElements()
+    </script>
     <script src="./js/app.js"></script>
 </body>
 
